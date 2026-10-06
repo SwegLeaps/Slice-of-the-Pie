@@ -1,0 +1,40 @@
+function onEdit(e) {
+  // Ensure the event object exists
+  if (!e || !e.range) return;
+  
+  const range = e.range;
+  const sheet = range.getSheet();
+  
+  // 1. Check if the edit happened in the "Meals" sheet, Column C (3), Row 7 or below
+  if (sheet.getName() === "Meals" && range.getColumn() === 3 && range.getRow() >= 7) {
+    const preparerName = e.value;
+    
+    // 2. If the cell was cleared or multiple cells were edited, do nothing
+    if (!preparerName || typeof preparerName !== 'string' || preparerName.trim() === "") return;
+    
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    // 3. Check if a grocery list tab already exists for this person
+    if (!ss.getSheetByName(preparerName)) {
+      // 4. If not, create a new sheet and name it after the preparer
+      const newSheet = ss.insertSheet(preparerName);
+      
+      // 5. Set up basic headers for their grocery list
+      newSheet.getRange("A1:D1").setValues([["Meal", "Ingredient", "Quantity", "Notes"]]);
+      newSheet.getRange("A1:D1").setFontWeight("bold");
+      
+      // 6. Insert formulas to automatically pull data
+      // Formula to get meals assigned to this preparer from the Meals sheet
+      const mealFormula = `=IFNA(FILTER(Meals!B7:B, Meals!C7:C = "${preparerName}"), "No meals assigned")`;
+      newSheet.getRange("A2").setFormula(mealFormula);
+      
+      // Formula to get ingredients for those meals 
+      // Note: This assumes your 'Ingredients' sheet has 'Meal' in Col A, 'Ingredient' in Col B, 'Quantity' in Col C, and 'Notes' in Col D.
+      const ingredientFormula = `=IFNA(FILTER(Ingredients!B2:D, COUNTIF(A2:A, Ingredients!A2:A) > 0), "No ingredients found")`;
+      newSheet.getRange("B2").setFormula(ingredientFormula);
+      
+      // 7. Auto-size columns for better readability
+      newSheet.autoResizeColumns(1, 4);
+    }
+  }
+}
