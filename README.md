@@ -12,6 +12,7 @@ Is Thanksgiving planning with family a process that usually leads to arguments a
 4. Individual shopping lists for each person are generated once their name is added to the main tab. Within that sheet, the ingredients are listed for each meal they are assigned. From there, you can format it anyway you'd like, and download individually.
 
 
+## Current Status and Future Updates
 ### Current Status
 1. Added Project to GitHub
 2. Created script to generate individual shopping lists
