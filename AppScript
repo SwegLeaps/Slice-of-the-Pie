@@ -20,8 +20,8 @@ function onEdit(e) {
       const newSheet = ss.insertSheet(preparerName);
       
       // 5. Set up basic headers for their grocery list
-      newSheet.getRange("A1:D1").setValues([["Meal", "Ingredient", "Quantity", "Notes"]]);
-      newSheet.getRange("A1:D1").setFontWeight("bold");
+      newSheet.getRange("A1:C1").setValues([["Meal", "Ingredients", "Notes"]]);
+      newSheet.getRange("A1:C1").setFontWeight("bold");
       
       // 6. Insert formulas to automatically pull data
       // Formula to get meals assigned to this preparer from the Meals sheet
@@ -29,8 +29,7 @@ function onEdit(e) {
       newSheet.getRange("A2").setFormula(mealFormula);
       
       // Formula to get ingredients for those meals 
-      // Note: This assumes your 'Ingredients' sheet has 'Meal' in Col A, 'Ingredient' in Col B, 'Quantity' in Col C, and 'Notes' in Col D.
-      const ingredientFormula = `=IFNA(FILTER(Ingredients!B2:D, COUNTIF(A2:A, Ingredients!A2:A) > 0), "No ingredients found")`;
+      const ingredientFormula = `=IFERROR(UNIQUE(TOCOL(FILTER(Ingredients!C3:W, BYCOL(Ingredients!C2:W2, LAMBDA(col, (col<>"") * (COUNTIF(A2:A, col)>0)))), 1)), "No ingredients found")`;
       newSheet.getRange("B2").setFormula(ingredientFormula);
       
       // 7. Auto-size columns for better readability
